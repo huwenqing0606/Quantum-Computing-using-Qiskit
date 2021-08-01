@@ -10,8 +10,12 @@ from qiskit import QuantumCircuit, assemble, transpile
 from qiskit.visualization import plot_histogram
 import matplotlib.pyplot as plt
 
-
+# the demonstration of Deutsch-Jozsa Algorithm, including 
+#   (1) the constant oracle
+#   (2) the balanced oracle
+#   (3) the Deiutsch-Jozsa circuit
 def dj_demonstrate(n):
+
     # build the const oracle with X gate at the last (n+1) qubit
     const_oracle = QuantumCircuit(n+1)
     output = np.random.randint(2)
@@ -72,7 +76,7 @@ def dj_demonstrate(n):
 
     return dj_circuit
 
-
+# the oracle gate for Deutsch-Jozsa Algorithm to detect difference: case='balanced' or 'constant'
 def dj_oracle(case, n):
     # We need to make a QuantumCircuit object to return
     # This circuit has n+1 qubits: the size of the input,
@@ -110,10 +114,10 @@ def dj_oracle(case, n):
             oracle_qc.x(n)
     
     oracle_gate = oracle_qc.to_gate()
-    oracle_gate.name = "Oracle" # To show when we display the circuit
+    oracle_gate.name = case+"_Oracle" # To show when we display the circuit
     return oracle_gate
 
-
+# run the Deutsch-Jozsa circuit
 def dj_algorithm(oracle, n):
     dj_circuit = QuantumCircuit(n+1, n)
     # Set up the output qubit:
@@ -135,8 +139,8 @@ def dj_algorithm(oracle, n):
 
 
 if __name__=='__main__':
-    n = 4
-    demonstrate = 0
+    n = 3
+    demonstrate = 1
     if demonstrate:
         dj_circuit = dj_demonstrate(n)
         # use local simulator
