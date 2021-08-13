@@ -27,8 +27,13 @@ def Simon_oracle(b):
         oracle_qc.cx(0,3)
         oracle_qc.cx(1,2)
     elif b=='110':
+        # for b='110'
         oracle_qc.cx(1,4)
         oracle_qc.cx(1,5)
+    elif b=='101':
+        # for b='101'
+        oracle_qc.cx(0,3)
+        oracle_qc.cx(0,5)
     else:
         print('Secret string b is currently not implemented')
         return None
@@ -46,7 +51,7 @@ def bdotz(b, z):
     
 if __name__=='__main__':
     # Implement the circuit for Simon's algorithm
-    b='110'
+    b='101'
     n=len(b)
     Simon_circuit = QuantumCircuit(2*n, n)
     # Apply Hadamard gates before querying the oracle
