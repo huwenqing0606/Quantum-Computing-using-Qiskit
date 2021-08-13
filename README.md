@@ -6,4 +6,10 @@ Code for some important quantum computing algorithms using IBM's qiskit Quantum 
 
 (2) Deutsch-Josza Algorithm: Differencing the constant and the balanced oracle;
 
+(3) Simon's algorithm: Differencing 1 to 1 and 2 to 1 functions;
+
+(4) Quantum Fourier Transform;
+
+
+
 
