@@ -8,7 +8,7 @@ from qiskit.tools.monitor import job_monitor
 from qiskit.visualization import plot_histogram, plot_bloch_multivector
 import matplotlib.pyplot as plt
 
-# demonstrate a simple 4 qubit Quantum Fourier Transform circuit
+# demonstrate a simple 4 qubit Quantum Fourier Transform (QFourierT) circuit
 def QFourier_demonstrate(qc_init):
     
     qc = QuantumCircuit(4)
@@ -52,7 +52,7 @@ def QFourier_demonstrate(qc_init):
     return qc
 
 
-# recursively build the sequence of H and CROT gates for QFT circuit
+# recursively build the sequence of H and CROT gates for QFourierT circuit
 def QFourier_H_CROT(circuit, k, n):
     if k==n:
         return circuit
@@ -71,6 +71,35 @@ def QFourier_swap(circuit, n):
     return circuit
 
 
+# build the QFourierT circuit in the first n qubits of qc_init
+def QFourier_circuit(qc_init, n):
+    qc = qc_init.copy()
+    # add the H and CROT gates
+    QFourier_H_CROT(qc, 0, n)
+    # add the swap gate
+    QFourier_swap(qc, n)
+
+    return qc
+
+
+# initialize the QFourierT circuit
+# n is number of registers, j is the initial state in [0, 2**n-1]
+def QFourier_init(n, j):
+    if (j<0 or j>2**n):
+        print('j out of range: 0 to 2**n\n')
+        return None
+    # turn j into binary, highest power of 2 on right
+    init_state = bin(j)[2:].zfill(n)[::-1]
+    # Encode the initial state
+    qc_init = QuantumCircuit(n)
+    for qubit in range(n):
+        if init_state[qubit]=='1':
+            qc_init.x(qubit)
+    qc_init.barrier()
+
+    return qc_init
+
+
 if __name__=='__main__':
 
     demonstrate = 0
@@ -83,28 +112,14 @@ if __name__=='__main__':
         qc=QFourier_demonstrate(qc_init)
     else:
         # n is number of registers, j is the initial state in [0, 2**n-1]
-        n = 7
-        j = 135
-        if (j<0 or j>2**n):
-            print('j out of range: 0 to 2**n\n')
-        # turn j into binary, highest power of 2 on right
-        init_state = bin(j)[2:].zfill(n)[::-1]
+        n=4
+        j=7
         # Encode the initial state
-        qc_init = QuantumCircuit(n)
-        for qubit in range(n):
-            if init_state[qubit]=='1':
-                qc_init.x(qubit)
-        qc_init.barrier()
+        qc_init = QFourier_init(n, j)
         qc_init.draw(output='mpl')
         plt.show()
         # build the Quantum Fourier Transform circuit for demonstration
-        qc = qc_init.copy()
-        # add the H and CROT gates
-        QFourier_H_CROT(qc, 0, n)
-        qc.draw(output='mpl')
-        plt.show()
-        # add the swap gate
-        QFourier_swap(qc, n)
+        qc = QFourier_circuit(qc_init, n)
         qc.draw(output='mpl')
         plt.show()
 
