@@ -100,6 +100,24 @@ def QFourier_init(n, j):
     return qc_init
 
 
+# inverse Quantum Fourier Transform on the first n qubits of qc_final
+# non-recursive form
+def QFourier_dagger(qc_final, n):
+    qc = qc_final.copy()
+    # the Swaps
+    QFourier_swap(qc, n)
+    qc.barrier()
+    # the H and CROT gates
+    for j in range(n):
+        target_qubit = n-j-1
+        for m in range(j):
+            control_qubit = n-m-1
+            qc.cp(-pi/2**(control_qubit-target_qubit), control_qubit, target_qubit)
+        qc.h(target_qubit)
+        qc.barrier()
+    return qc
+
+
 if __name__=='__main__':
 
     demonstrate = 0
@@ -122,6 +140,11 @@ if __name__=='__main__':
         qc = QFourier_circuit(qc_init, n)
         qc.draw(output='mpl')
         plt.show()
+        # check inverse transform
+        qc_final = qc.copy()
+        qc_inverse = QFourier_dagger(qc_final, n)
+        qc_inverse.draw(output='mpl')
+        plt.show()
 
         
     # start plotting the change of basis in Quantum Fourier Transform
@@ -134,6 +157,11 @@ if __name__=='__main__':
     # the transformed basis
     qc.save_statevector()
     statevector = sim.run(qc).result().get_statevector()
+    plot_bloch_multivector(statevector)
+    plt.show()
+    # the inverse transformed basis
+    qc_inverse.save_statevector()
+    statevector = sim.run(qc_inverse).result().get_statevector()
     plot_bloch_multivector(statevector)
     plt.show()
 
