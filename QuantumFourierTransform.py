@@ -52,16 +52,18 @@ def QFourier_demonstrate(qc_init):
     return qc
 
 
-# recursively build the sequence of H and CROT gates for QFourierT circuit
-def QFourier_H_CROT(circuit, k, n):
-    if k==n:
+# recursively build the sequence of H and CROT gates for QFourierT circuit 
+# at the first n qubits of circuit
+def QFourier_H_CROT(circuit, target_qubit, n):
+    if target_qubit==-1:
         return circuit
-    circuit.h(k)
-    for target_qubit in range(k+1, n):
-        circuit.cp(pi/2**(target_qubit-k), k, target_qubit)
+    circuit.h(target_qubit)
+    for m in range(target_qubit):
+        control_qubit = target_qubit-m-1
+        circuit.cp(pi/2**(target_qubit-control_qubit), control_qubit, target_qubit)
     circuit.barrier()
 
-    QFourier_H_CROT(circuit, k+1, n)
+    QFourier_H_CROT(circuit, target_qubit-1, n)
 
 
 # the swap gate of Quantum Fourier Transform 
@@ -75,7 +77,7 @@ def QFourier_swap(circuit, n):
 def QFourier_circuit(qc_init, n):
     qc = qc_init.copy()
     # add the H and CROT gates
-    QFourier_H_CROT(qc, 0, n)
+    QFourier_H_CROT(qc, n-1, n)
     # add the swap gate
     QFourier_swap(qc, n)
 
@@ -108,19 +110,19 @@ def QFourier_dagger(qc_final, n):
     QFourier_swap(qc, n)
     qc.barrier()
     # the H and CROT gates
-    for j in range(n):
-        target_qubit = n-j-1
-        for m in range(j):
-            control_qubit = n-m-1
-            qc.cp(-pi/2**(control_qubit-target_qubit), control_qubit, target_qubit)
+    for target_qubit in range(n):
+        for control_qubit in range(target_qubit):
+            qc.cp(-pi/2**(target_qubit-control_qubit), control_qubit, target_qubit)
         qc.h(target_qubit)
         qc.barrier()
     return qc
 
 
-if __name__=='__main__':
-
-    demonstrate = 0
+# show the circuit construction of Quantum Fourier Transform and the state vector change
+# also show inverse transform
+# if demonstrate = 1, show a demonstration of a 4 qubit circuit
+# n is number of registers, j is the initial state in [0, 2**n-1]
+def QFourier_showcircuit(demonstrate, n, j):
     if demonstrate:
         # Encode the initial state
         qc_init = QuantumCircuit(4)
@@ -129,9 +131,6 @@ if __name__=='__main__':
         # build the Quantum Fourier Transform circuit for demonstration
         qc=QFourier_demonstrate(qc_init)
     else:
-        # n is number of registers, j is the initial state in [0, 2**n-1]
-        n=4
-        j=7
         # Encode the initial state
         qc_init = QFourier_init(n, j)
         qc_init.draw(output='mpl')
@@ -158,6 +157,7 @@ if __name__=='__main__':
     qc.save_statevector()
     statevector = sim.run(qc).result().get_statevector()
     plot_bloch_multivector(statevector)
+    #plt.savefig('D:\\Temporary Files\\Quantum Computing_2021_SummerSeminar\\qiskit_code\\QFourier_'+str(j))
     plt.show()
     # the inverse transformed basis
     qc_inverse.save_statevector()
@@ -165,4 +165,38 @@ if __name__=='__main__':
     plot_bloch_multivector(statevector)
     plt.show()
 
+    return None
+
+
+# produce a sequence of figures showing the change of Fourier basis with n input qubits
+def QFourier_produceanimation(animate, n):
+
+    if not animate:
+        return None
+    
+    for j in range(2**n-1):
+        # Encode the initial state
+        qc_init = QFourier_init(n, j)
+        # build the Quantum Fourier Transform circuit for demonstration
+        qc = QFourier_circuit(qc_init, n)
+
+        # start plotting the change of basis in Quantum Fourier Transform
+        sim = Aer.get_backend("aer_simulator")
+        # the transformed basis
+        qc.save_statevector()
+        statevector = sim.run(qc).result().get_statevector()
+        plot_bloch_multivector(statevector)
+        plt.savefig('D:\\Temporary Files\\Quantum Computing_2021_SummerSeminar\\qiskit_code\\QFourier_'+str(j))
+
+    return None
+
+
+if __name__=='__main__':
+
+    # demonstrate chooses to demonstrate or not, =1 means demonstrate
+    # n is number of registers, j is the initial state in [0, 2**n-1]
+    QFourier_showcircuit(demonstrate=0, n=5, j=31)
+    # animate chooses to produce sequence of animated basis or not
+    # produce a sequence of figures showing the change of Fourier basis with n input qubits
+    #QFourier_produceanimation(animate=0, n=5)
 
