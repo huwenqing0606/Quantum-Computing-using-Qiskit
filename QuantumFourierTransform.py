@@ -18,28 +18,26 @@ def QFourier_demonstrate(qc_init):
     qc.draw(output='mpl')
     plt.show()
 
-    qc.h(0)
+    qc.h(3)
+    qc.draw(output='mpl')
+    plt.show()
+
+    qc.cp(pi/2, 3, 2) # CROT with control qubit 2 and target qubit 3
+    qc.cp(pi/4, 3, 1) # CROT with control qubit 1 and target qubit 3
+    qc.cp(pi/8, 3, 0) # CROT with control qubit 0 and target qubit 3 
     qc.barrier()
     qc.draw(output='mpl')
     plt.show()
 
-    qc.cp(pi/2, 0, 1) # CROT from qubit 0 to qubit 1
+    qc.h(2)
+    qc.cp(pi/2, 2, 1) # CROT with control qubit 1 and target qubit 2
+    qc.cp(pi/4, 2, 0) # CROT with control qubit 0 and target qubit 2
     qc.barrier()
-    qc.draw(output='mpl')
-    plt.show()
-
-    qc.cp(pi/4, 0, 2) # CROT from qubit 0 to qubit 2
-    qc.cp(pi/8, 0, 3) # CROT from qubit 0 to qubit 3
-    qc.barrier()
-    qc.draw(output='mpl')
-    plt.show()
 
     qc.h(1)
-    qc.cp(pi/2, 1, 2) # CROT from qubit 1 to qubit 2
-    qc.cp(pi/4, 1, 3) # CROT from qubit 1 to qubit 3
-    qc.h(2)
-    qc.cp(pi/2, 2, 3) # CROT from qubit 2 to qubit 3
-    qc.h(3)
+    qc.cp(pi/2, 1, 0) # CROT with control qubit 0 and target qubit 1
+    qc.barrier()
+    qc.h(0)
     qc.barrier()
     qc.draw(output='mpl')
     plt.show()
@@ -130,6 +128,11 @@ def QFourier_showcircuit(demonstrate, n, j):
         qc_init.x(2)
         # build the Quantum Fourier Transform circuit for demonstration
         qc=QFourier_demonstrate(qc_init)
+        # check inverse transform
+        qc_final = qc.copy()
+        qc_inverse = QFourier_dagger(qc_final, 4)
+        qc_inverse.draw(output='mpl')
+        plt.show()        
     else:
         # Encode the initial state
         qc_init = QFourier_init(n, j)
