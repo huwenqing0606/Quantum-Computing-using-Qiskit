@@ -8,6 +8,7 @@ from qiskit.tools.monitor import job_monitor
 from qiskit.visualization import plot_histogram, plot_bloch_multivector
 import matplotlib.pyplot as plt
 
+
 # demonstrate a simple 4 qubit Quantum Fourier Transform (QFourierT) circuit
 def QFourier_demonstrate(qc_init):
     
@@ -72,14 +73,13 @@ def QFourier_swap(circuit, n):
 
 
 # build the QFourierT circuit in the first n qubits of qc_init
-def QFourier_circuit(qc_init, n):
-    qc = qc_init.copy()
+def QFourier(circuit, n):
     # add the H and CROT gates
-    QFourier_H_CROT(qc, n-1, n)
+    QFourier_H_CROT(circuit, n-1, n)
     # add the swap gate
-    QFourier_swap(qc, n)
+    QFourier_swap(circuit, n)
 
-    return qc
+    return circuit
 
 
 # initialize the QFourierT circuit
@@ -102,18 +102,17 @@ def QFourier_init(n, j):
 
 # inverse Quantum Fourier Transform on the first n qubits of qc_final
 # non-recursive form
-def QFourier_dagger(qc_final, n):
-    qc = qc_final.copy()
+def QFourier_inverse(circuit, n):
     # the Swaps
-    QFourier_swap(qc, n)
-    qc.barrier()
+    QFourier_swap(circuit, n)
+    circuit.barrier()
     # the H and CROT gates
     for target_qubit in range(n):
         for control_qubit in range(target_qubit):
-            qc.cp(-pi/2**(target_qubit-control_qubit), control_qubit, target_qubit)
-        qc.h(target_qubit)
-        qc.barrier()
-    return qc
+            circuit.cp(-pi/2**(target_qubit-control_qubit), control_qubit, target_qubit)
+        circuit.h(target_qubit)
+        circuit.barrier()
+    return circuit
 
 
 # show the circuit construction of Quantum Fourier Transform and the state vector change
@@ -129,8 +128,8 @@ def QFourier_showcircuit(demonstrate, n, j):
         # build the Quantum Fourier Transform circuit for demonstration
         qc=QFourier_demonstrate(qc_init)
         # check inverse transform
-        qc_final = qc.copy()
-        qc_inverse = QFourier_dagger(qc_final, 4)
+        qc_inverse = qc.copy()
+        QFourier_inverse(qc_inverse, 4)
         qc_inverse.draw(output='mpl')
         plt.show()        
     else:
@@ -139,12 +138,13 @@ def QFourier_showcircuit(demonstrate, n, j):
         qc_init.draw(output='mpl')
         plt.show()
         # build the Quantum Fourier Transform circuit for demonstration
-        qc = QFourier_circuit(qc_init, n)
+        qc = qc_init.copy()
+        QFourier(qc, n)
         qc.draw(output='mpl')
         plt.show()
         # check inverse transform
         qc_final = qc.copy()
-        qc_inverse = QFourier_dagger(qc_final, n)
+        qc_inverse = QFourier_inverse(qc_final, n)
         qc_inverse.draw(output='mpl')
         plt.show()
 
@@ -179,9 +179,9 @@ def QFourier_produceanimation(animate, n):
     
     for j in range(2**n-1):
         # Encode the initial state
-        qc_init = QFourier_init(n, j)
+        qc = QFourier_init(n, j)
         # build the Quantum Fourier Transform circuit for demonstration
-        qc = QFourier_circuit(qc_init, n)
+        QFourier(qc, n)
 
         # start plotting the change of basis in Quantum Fourier Transform
         sim = Aer.get_backend("aer_simulator")
@@ -201,5 +201,4 @@ if __name__=='__main__':
     QFourier_showcircuit(demonstrate=0, n=5, j=31)
     # animate chooses to produce sequence of animated basis or not
     # produce a sequence of figures showing the change of Fourier basis with n input qubits
-    #QFourier_produceanimation(animate=0, n=5)
-
+    #QFourier_produceanimation(animate=1, n=5)
