@@ -10,7 +10,7 @@ Code for some important quantum computing algorithms using IBM's qiskit Quantum 
 
 (4) Quantum Fourier Transform, Inverse Quantum Fourier Transform;
 
-(5) Quantum Phase Estimation: Estimate the phase of a unitary operator U|\psi>=e^{i\phi}|\psi>;
+(5) Quantum Phase Estimation: Estimate the phase of a unitary operator U|\psi>=e^{2\pi i \theta}|\psi>;
 
 
 
