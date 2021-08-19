@@ -8,7 +8,11 @@ Code for some important quantum computing algorithms using IBM's qiskit Quantum 
 
 (3) Simon's algorithm: Differencing 1 to 1 and 2 to 1 functions;
 
-(4) Quantum Fourier Transform;
+(4) Quantum Fourier Transform, Inverse Quantum Fourier Transform;
+
+(5) Quantum Phase Estimation: Estimate the phase of a unitary operator U|\psi>=e^{i\phi}|\psi>;
+
+
 
 
 
