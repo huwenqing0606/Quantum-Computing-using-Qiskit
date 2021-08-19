@@ -25,8 +25,6 @@ def QuantumPhaseEstimation(qc, t, theta):
         qc.barrier()
     # inverse Fourier transform on the first t qubits
     QFourier_inverse(qc, t)
-    qc.draw(output='mpl')
-    plt.show()
     # measure the first t qubits
     qc.measure(range(t), range(t))
 
@@ -34,8 +32,8 @@ def QuantumPhaseEstimation(qc, t, theta):
 
 
 if __name__ == '__main__':
-    t = 4
-    theta = 1/10 
+    t = 3
+    theta = 1/3
     # initialization
     qc = QuantumCircuit(t+1, t)
     qc.x(t)
