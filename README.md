@@ -12,6 +12,10 @@ Code for some important quantum computing algorithms using IBM's qiskit Quantum 
 
 (5) Quantum Phase Estimation: Estimate the phase of a unitary operator U|\psi>=e^{2\pi i \theta}|\psi>;
 
+(6) Period Finding and Shor's Factorization Algorithm;
+
+(7) Grover's Search Algorithm;
+
 
 
 
