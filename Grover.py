@@ -126,7 +126,7 @@ if __name__=='__main__':
         oracle = Grover_oracle_101_110()
         diffuser = Grover_diffuser(n)
     else:
-        b = '10111001'
+        b = '101110010101'
         n = len(b)
         oracle = Grover_oracle(b)
         diffuser = Grover_diffuser(n)
@@ -141,7 +141,8 @@ if __name__=='__main__':
     # simulate measurement
     Grover_circuit.measure_all()
     aer_sim = Aer.get_backend('aer_simulator')
-    qobj = assemble(Grover_circuit)
+    shots = 5*(2**n)
+    qobj = assemble(Grover_circuit, shots=shots)
     result = aer_sim.run(qobj).result()
     counts = result.get_counts()
     plot_histogram(counts)
@@ -157,3 +158,7 @@ if __name__=='__main__':
                 Grover_guess = key
                 maximal_count = counts[key]
         print('Grover guess is', Grover_guess, 'count is', maximal_count)
+        if Grover_guess == b:
+            print('Right Grover guess :)')
+        else:
+            print('Wrong Grover guess :(')
