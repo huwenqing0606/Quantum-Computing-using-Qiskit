@@ -124,12 +124,12 @@ if __name__=='__main__':
         oracle = Grover_oracle_101_110()
         diffuser = Grover_diffuser(n)
     else:
-        b = '1011'
+        b = '101110'
         n = len(b)
         oracle = Grover_oracle(b)
         diffuser = Grover_diffuser(n)
 
-    t = 2
+    t = int(np.sqrt(n))
     Grover_circuit = Grover_circuit(n, oracle, diffuser, t)
     Grover_circuit.draw(output='mpl')
     plt.show()
@@ -141,4 +141,5 @@ if __name__=='__main__':
     result = aer_sim.run(qobj).result()
     counts = result.get_counts()
     plot_histogram(counts)
+    print(counts)
     plt.show()
