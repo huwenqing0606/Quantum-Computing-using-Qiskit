@@ -115,6 +115,8 @@ if __name__=='__main__':
     # set oracle and diffuser
     demonstrate_11 = 0
     demonstrate_101_110 = 0
+    show = 0
+    guess = 1
     if demonstrate_11:
         n = 2 
         oracle = Grover_oracle_11()
@@ -124,15 +126,17 @@ if __name__=='__main__':
         oracle = Grover_oracle_101_110()
         diffuser = Grover_diffuser(n)
     else:
-        b = '101110'
+        b = '10111001'
         n = len(b)
         oracle = Grover_oracle(b)
         diffuser = Grover_diffuser(n)
 
-    t = int(np.sqrt(n))
+    c = np.pi/4
+    t = int(c*np.sqrt(n))
     Grover_circuit = Grover_circuit(n, oracle, diffuser, t)
     Grover_circuit.draw(output='mpl')
-    plt.show()
+    if show:
+        plt.show()
 
     # simulate measurement
     Grover_circuit.measure_all()
@@ -141,5 +145,15 @@ if __name__=='__main__':
     result = aer_sim.run(qobj).result()
     counts = result.get_counts()
     plot_histogram(counts)
-    print(counts)
-    plt.show()
+    if show:
+        plt.show()
+    # find the maximal count string as the Grover guess result
+    if guess:
+        maximal_count = 0
+        Grover_guess = ''
+        for key in counts.keys():
+            print(key, ':', counts[key])
+            if counts[key]>=maximal_count:
+                Grover_guess = key
+                maximal_count = counts[key]
+        print('Grover guess is', Grover_guess, 'count is', maximal_count)
